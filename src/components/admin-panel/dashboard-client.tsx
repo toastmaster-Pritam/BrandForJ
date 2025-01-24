@@ -4,7 +4,6 @@ import { useSidebar } from "@/hooks/use-sidebar";
 import { useStore } from "@/hooks/use-store";
 import DynamicChartCard from "@/components/card";
 import Image from "next/image";
-import { Suspense } from "react";
 
 const DashboardClient = ({username}:{username:string}) => {
     const sidebar = useStore(useSidebar, (x) => x);

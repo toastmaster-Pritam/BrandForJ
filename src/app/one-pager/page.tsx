@@ -197,7 +197,7 @@ export default function BrandBookPage() {
     // console.log(jsonResponse)
 
     // Redirect to preview page with the first image and pass all image URLs
-    if (imageUrls) {
+    if (imageUrls && imageUrls[0] && imageUrls.length!==0) {
       router.push(
         `/download-generated-image?firstImage=${encodeURIComponent(
           imageUrls[0]
@@ -216,6 +216,10 @@ export default function BrandBookPage() {
 
       console.log(data);
     }
+    else{
+      toast.error("Something went wrong,please try again!")
+    }
+
   };
 
   async function handleClick() {

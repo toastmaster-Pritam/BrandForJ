@@ -25,7 +25,7 @@ export function ContentLayout({
     pathname.startsWith(path)
   );
   return (
-    <div className="relative h-screen overflow-y-auto px-5 overflow-x-hidden flex flex-col justify-between bg-black">
+    <div className="relative min-h-screen overflow-y-auto px-5 overflow-x-hidden flex flex-col justify-between bg-black">
      <div>
      <div className="absolute top-14 left-12 z-50">
       <SidebarToggle isOpen={isOpen} setIsOpen={toggleOpen} />

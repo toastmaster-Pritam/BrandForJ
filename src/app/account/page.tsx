@@ -34,10 +34,10 @@ export default async function AccountPage() {
       </div>
 
       <AccountClient
-        firstName={user.firstName}
-        lastName={user.lastName}
-        email={user.email}
-        file={user.avatarUrl}
+        firstName={user?.firstName}
+        lastName={user?.lastName}
+        email={user?.email}
+        file={user?.avatarUrl}
       />
     </ContentLayout>
   );
