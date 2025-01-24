@@ -74,13 +74,35 @@ const config = {
         "collapsible-up": {
           from: { height: "var(--radix-collapsible-content-height)" },
           to: { height: "0" }
-        }
+        },
+        slideLeft: {
+          '0%': { transform: 'translateX(-100%)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1'},
+        },
+        slideRight: {
+          '0%': { transform: 'translateX(100%)', opacity: '0' },
+          '100%': { transform: 'translateX(0)', opacity: '1' },
+        },
+        slideUp: {
+          '0%': { transform: 'translateY(100%)', opacity: '0' },
+          '100%': { transform: 'translateY(0)', opacity: '1' },
+        },
+        slideDown: {
+          "0%": { transform: "translateY(-100%)", opacity: "0" },
+          "100%": { transform: "translateY(0)", opacity: "1" },
+        },
+       
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "collapsible-down": "collapsible-down 0.2s ease-out",
-        "collapsible-up": "collapsible-up 0.2s ease-out"
+        "collapsible-up": "collapsible-up 0.2s ease-out",
+        'slide-left': 'slideLeft 1s ease-out forwards',
+        'slide-right': 'slideRight 1s ease-out forwards',
+        'slide-up': 'slideUp 1s ease-out forwards',
+        "slide-down": "slideDown 1s ease-out forwards",
+        
       }
     }
   },

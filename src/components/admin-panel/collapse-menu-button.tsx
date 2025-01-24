@@ -35,7 +35,7 @@ type Submenu = {
 };
 
 interface CollapseMenuButtonProps {
-  icon: LucideIcon;
+  icon: LucideIcon | React.ComponentType | string;
   label: string;
   active: boolean;
   submenus: Submenu[];
