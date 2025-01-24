@@ -1,7 +1,7 @@
 "use client"
 import { Navbar } from "@/components/admin-panel/navbar";
 import Image from "next/image";
-import BgImg from "../../../public/bg.png";
+import BgImg from "../../../public/bg-rounded.png";
 import { useSidebar } from "@/hooks/use-sidebar";
 import { SidebarToggle } from "./sidebar-toggle";
 import { usePathname } from "next/navigation";
@@ -25,17 +25,22 @@ export function ContentLayout({
     pathname.startsWith(path)
   );
   return (
-    <div className="relative min-h-screen overflow-y-auto px-10 overflow-x-hidden flex flex-col justify-between bg-black">
+    <div className="relative h-screen overflow-y-auto px-5 overflow-x-hidden flex flex-col justify-between bg-black">
      <div>
      <div className="absolute top-14 left-12 z-50">
       <SidebarToggle isOpen={isOpen} setIsOpen={toggleOpen} />
       </div>
 
+      <div className="absolute top-[1%] left-[1%] object-cover rounded-xl w-[98%] h-[98%] bg-black">
       <Image
         src={BgImg}
         alt="bgimg"
-        className="absolute top-0 left-0 w-full h-full object-cover  z-0 pb-1 pt-6 px-8 "
+        className="h-full w-full"
+        
       />
+      </div>
+
+      
       <div className="relative z-10 px-5 mt-10">
       
       {!shouldHideNavbar ? (
