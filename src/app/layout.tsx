@@ -17,25 +17,12 @@ export const metadata: Metadata = {
       ? `https://${process.env.VERCEL_URL}`
       : `http://localhost:${process.env.PORT || 3000}`
   ),
-  title: "BrandForj 2.0",
+  title: "BrandForj - Empowering Brands with Bold, Enterprise-Level Design Solutions",
   description:
-    "A stunning and functional retractable sidebar for Next.js built on top of shadcn/ui complete with desktop and mobile responsiveness.",
+    "Best AI and functional components to boost your startup",
   alternates: {
     canonical: "/"
   },
-  openGraph: {
-    url: "/",
-    title: "shadcn/ui sidebar",
-    description:
-      "A stunning and functional retractable sidebar for Next.js built on top of shadcn/ui complete with desktop and mobile responsiveness.",
-    type: "website"
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "shadcn/ui sidebar",
-    description:
-      "A stunning and functional retractable sidebar for Next.js built on top of shadcn/ui complete with desktop and mobile responsiveness."
-  }
 };
 
 export default function RootLayout({

@@ -66,35 +66,37 @@ export function Menu({ isOpen }: MenuProps) {
                       <TooltipProvider disableHoverableContent>
                         <Tooltip delayDuration={100}>
                           <TooltipTrigger asChild>
-                            <Button
-                              variant={
-                                (active === undefined &&
-                                  pathname.startsWith(href)) ||
-                                active
-                                  ? "secondary"
-                                  : "ghost"
-                              }
-                              className="w-full justify-start h-10 mb-1"
-                              asChild
-                            >
-                              <Link href={href}>
-                                <span
-                                  className={cn(isOpen === false ? "" : "mr-4")}
-                                >
-                                  <Icon size={18} />
-                                </span>
-                                <p
-                                  className={cn(
-                                    "max-w-[200px] truncate",
-                                    isOpen === false
-                                      ? "-translate-x-96 opacity-0"
-                                      : "translate-x-0 opacity-100"
-                                  )}
-                                >
-                                  {label}
-                                </p>
-                              </Link>
-                            </Button>
+                          <Button
+  variant={
+    (active === undefined && pathname.startsWith(href)) || active
+      ? "secondary"
+      : "ghost"
+  }
+  className={cn(
+    "w-full justify-start h-10 mb-1",
+    (active === undefined && pathname.startsWith(href)) || active
+      ? "bg-[#7500FF] text-white hover:bg-[#7500FF]"
+      : "hover:bg-[#7500FF] hover:text-white"
+  )}
+  asChild
+>
+  <Link href={href}>
+    <span className={cn(isOpen === false ? "" : "mr-4")}>
+      <Icon size={18} />
+    </span>
+    <p
+      className={cn(
+        "max-w-[200px] truncate",
+        isOpen === false
+          ? "-translate-x-96 opacity-0"
+          : "translate-x-0 opacity-100"
+      )}
+    >
+      {label}
+    </p>
+  </Link>
+</Button>
+
                           </TooltipTrigger>
                           {isOpen === false && (
                             <TooltipContent side="right">

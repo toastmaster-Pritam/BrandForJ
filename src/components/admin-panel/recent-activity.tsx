@@ -17,7 +17,7 @@ const RecentActivity: React.FC<RecentActivityProps> = ({ imageUrls }) => {
   const handlePdfGeneration = async (images: string[], index: number) => {
     setLoading(index); // Set loading for the specific card
     try {
-      await generatePdf(images); // Call the generatePdf function with the image array
+      await generatePdf(images,`Generated Content ${index + 1}`); // Call the generatePdf function with the image array
       toast.success("PDF generated successfully!");
     } catch (error) {
       console.error("Error generating PDF:", error);

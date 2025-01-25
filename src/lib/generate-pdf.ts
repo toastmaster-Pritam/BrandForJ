@@ -1,6 +1,6 @@
 import { jsPDF } from "jspdf";
 
-export async function generatePdf(imageUrls: string[]) {
+export async function generatePdf(imageUrls: string[],pdfName:string) {
   // Initialize the PDF in landscape mode
   const pdf = new jsPDF({
     orientation: "landscape", // Set orientation to landscape
@@ -69,7 +69,7 @@ export async function generatePdf(imageUrls: string[]) {
   
 
   // Save the PDF
-  pdf.save("brand-guidelines.pdf");
+  pdf.save(`${pdfName}.pdf`);
 
   
 

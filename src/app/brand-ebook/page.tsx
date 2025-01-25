@@ -169,7 +169,7 @@ export default function BrandEBookPage() {
       router.push(
         `/download-generated-image?firstImage=${encodeURIComponent(
           imageUrls[0]
-        )}&allImages=${encodeURIComponent(JSON.stringify(imageUrls))}`
+        )}&allImages=${encodeURIComponent(JSON.stringify(imageUrls))}&pdfName=${encodeURIComponent("brand-ebook")}`
       );
 
       const res = await fetch("/api/save-images", {

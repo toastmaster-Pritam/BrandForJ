@@ -18,12 +18,13 @@ export default function BrandPreview() {
   const allImages = JSON.parse(
     decodeURIComponent(searchParams.get("allImages") || "[]")
   );
+  const pdfName=searchParams.get("pdfName") || "generated-content"
 
   const handleDownload = async () => {
     setLoading(true);
 
     try {
-      const formData = await generatePdf(allImages);
+      const formData = await generatePdf(allImages,pdfName);
       console.log("hello", formData);
       toast.success("Pdf downloaded successfully!")
     } catch (error) {
@@ -39,7 +40,7 @@ export default function BrandPreview() {
     <ContentLayout title2="">
   <div className="flex flex-col items-center justify-center px-6 py-12 gap-6 ">
     <h1 className="text-3xl font-bold text-black text-center">
-      Generated Image Preview
+    👋🏻 Its ready Just the way you want it, Download to see full file
     </h1>
 
     <div className="flex flex-col items-center w-full max-w-lg gap-6">

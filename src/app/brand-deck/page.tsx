@@ -158,7 +158,7 @@ export default function BrandOnePager() {
       router.push(
         `/download-generated-image?firstImage=${encodeURIComponent(
           imageUrls[0]
-        )}&allImages=${encodeURIComponent(JSON.stringify(imageUrls))}`
+        )}&allImages=${encodeURIComponent(JSON.stringify(imageUrls))}&pdfName=${encodeURIComponent("brand-deck")}`
       );
 
       const res = await fetch("/api/save-images", {

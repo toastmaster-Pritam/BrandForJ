@@ -15,7 +15,7 @@ export default async function AccountPage() {
       <div className="relative h-64 w-full rounded-lg overflow-hidden">
         {/* Background Image */}
         <Image
-          src="/foreground.svg"
+          src="/foreground.webp"
           alt="Background Image"
           layout="fill"
           objectFit="cover"
