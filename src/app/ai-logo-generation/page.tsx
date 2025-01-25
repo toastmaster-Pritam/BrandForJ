@@ -248,7 +248,7 @@ export default function BrandOnePager() {
         </div>
 
         <Button
-          className="px-6 py-6 rounded-xl relative overflow-hidden"
+          className="px-6 py-6 rounded-xl relative overflow-hidden shadow-lg"
           onClick={handleGenerateLogo}
           disabled={isGenerating}
         >

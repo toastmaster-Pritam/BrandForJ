@@ -254,7 +254,7 @@ export default function BrandBookPage() {
         </div>
         <div className="mt-8">
           <Button
-            className="px-6 py-6 rounded-xl relative overflow-hidden"
+            className="px-6 py-6 rounded-xl relative overflow-hidden shadow-lg"
             onClick={handleSubmit}
             disabled={loading}
           >

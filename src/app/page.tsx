@@ -42,18 +42,7 @@ export default function HomePage() {
             <span className="font-bold">BrandForj 2.0</span>
             <span className="sr-only">BrandForj 2.0</span>
           </Link>
-          <nav className="ml-auto flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="icon"
-              className="rounded-full w-8 h-8 bg-background"
-              asChild
-            >
-              <Link href="https://github.com/toastmaster-Pritam">
-                <GitHubLogoIcon className="h-[1.2rem] w-[1.2rem]" />
-              </Link>
-            </Button>
-          </nav>
+         
         </div>
       </header>
 

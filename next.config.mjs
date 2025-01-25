@@ -22,6 +22,15 @@ const nextConfig = {
         hostname: "**"
       }
     ]
+  },
+  redirects: async () => {
+    return [
+      {
+        source: "/",
+        destination: "/dashboard",
+        permanent: true // Set to true for 308 redirects, false for 307
+      }
+    ];
   }
 };
 

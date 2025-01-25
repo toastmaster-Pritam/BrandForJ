@@ -15,7 +15,7 @@ export function Navbar({ title1,title2 }: NavbarProps) {
 
 
   return (
-    <header className="sticky top-5 z-10 w-full bg-white shadow-xl rounded-lg border border-gray-200 animate-slide-down">
+    <header className="sticky top-5 z-10 w-full bg-white shadow-xl rounded-full border border-gray-200 animate-slide-down">
       <div className="mx-4 sm:mx-8 flex h-14 items-center justify-between">
         
         <div className="flex items-center space-x-4 ml-10">

@@ -130,7 +130,7 @@ export function Menu({ isOpen }: MenuProps) {
                     <Button
                       onClick={handleSignOut}
                       variant="outline"
-                      className="w-full justify-center h-10 mt-5 bg-zinc-900 border border-gray-700"
+                      className="w-full justify-center h-10 mt-5 bg-zinc-900 border border-gray-700 "
                     >
                       <span className={cn(isOpen === false ? "" : "mr-4")}>
                         <LogOut size={18} />
