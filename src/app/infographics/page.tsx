@@ -238,7 +238,7 @@ export default function BrandBookPage() {
           </div>
         </div>
         <p className="text-gray-600 mt-2 italic px-10 text-center">
-          Visualize Your Brand's Story with Stunning Infographics & Creates a
+          Visualize Your Brand&apos;s Story with Stunning Infographics & Creates a
           visually compelling infographic that enhances engagement and
           storytelling
         </p>

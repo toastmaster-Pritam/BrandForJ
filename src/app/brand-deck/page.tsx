@@ -214,7 +214,7 @@ export default function BrandOnePager() {
           </div>
         </div>
         <p className="text-gray-600 mt-2 italic">
-          Answer a few key questions, and we'll craft a professional brand deck
+          Answer a few key questions, and we&apos;ll craft a professional brand deck
           tailored to your business.
         </p>
 

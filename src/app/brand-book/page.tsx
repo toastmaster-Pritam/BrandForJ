@@ -224,7 +224,7 @@ export default function BrandBookPage() {
           </div>
         </div>
         <p className="text-gray-600 mt-2 italic">
-          Answer a few key questions, and we'll craft a professional brandbook
+          Answer a few key questions, and we&apos;ll craft a professional brandbook
           tailored to your business.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl">
