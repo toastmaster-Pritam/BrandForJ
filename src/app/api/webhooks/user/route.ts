@@ -12,7 +12,7 @@ async function handler(request: Request) {
   const heads = {
     "svix-id": headersList.get("svix-id"),
     "svix-timestamp": headersList.get("svix-timestamp"),
-    "svix-signature": headersList.get("svix-signature"),
+    "svix-signature": headersList.get("svix-signature")
   };
 
   const wh = new Webhook(webhookSecret);
@@ -38,23 +38,22 @@ async function handler(request: Request) {
     console.log("Attributes:", attributes);
 
     const email = attributes.email_addresses?.[0]?.email_address || null; // Extract first email address
-    const firstName = attributes.first_name || null;
-    const lastName = attributes.last_name || null;
-    const avatarUrl = attributes.image_url || null;
+    // const firstName = attributes.first_name || null;
+    // const lastName = attributes.last_name || null;
+    // const avatarUrl = attributes.image_url || null;
 
     try {
       await db.user.upsert({
         where: {
-          clerkUserId: id as string, // Unique identifier for the user
+          clerkUserId: id as string // Unique identifier for the user
         },
         create: {
           clerkUserId: id as string,
-          email:email as string,
+          email: email as string
         },
         update: {
-          email:email as string,
-         
-        },
+          email: email as string
+        }
       });
 
       console.log(`User ${id} successfully upserted.`);
@@ -65,12 +64,30 @@ async function handler(request: Request) {
         { status: 500 }
       );
     }
+  } else if (eventType === "user.deleted") {
+    const { id } = evt.data as UserEventData;
+
+    try {
+      await db.user.delete({
+        where: {
+          clerkUserId: id
+        }
+      });
+
+      console.log(`User with Id:${id} is deleted from database via webhook!`);
+    } catch (error) {
+      console.error("Database upsert error:", error);
+      return NextResponse.json(
+        { message: "Database error during upsert" },
+        { status: 500 }
+      );
+    }
   }
 
   return NextResponse.json({ message: "Successful" }, { status: 200 });
 }
 
-type EventType = "user.created" | "user.updated" | "*";
+type EventType = "user.created" | "user.updated" | "user.deleted" | "*";
 
 type EmailAddress = {
   email_address: string;
@@ -95,3 +112,4 @@ type Event = {
 export const GET = handler;
 export const POST = handler;
 export const PUT = handler;
+export const DELETE = handler;

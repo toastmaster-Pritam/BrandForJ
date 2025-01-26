@@ -10,15 +10,17 @@ import pLimit from "p-limit";
 import { useClerk, useUser } from "@clerk/nextjs";
 import { AddFreeCredits } from "../actions/addFreeCredits";
 import { toast } from "react-toastify";
-import { Zap } from "lucide-react";
+import { Loader2, Zap } from "lucide-react";
 import { brandDeckSchema } from "@/schemas/zod-validation";
 import GenerationLoader from "@/components/generation-loader";
+import { fetchBrandDetails } from "../actions/fetchBrandDetails";
 const limit = pLimit(1);
 
 interface FormData {
   brandName: string;
   brandInfo: string;
   brandColors: string;
+  website_url?: string;
 }
 
 export default function BrandOnePager() {
@@ -38,6 +40,11 @@ export default function BrandOnePager() {
       name: "brandColors",
       label: "Brand Colors",
       placeholder: "What are your brand's primary colors?"
+    },
+    {
+      name: "website_url",
+      label: "Reference Website",
+      placeholder: "Reference website"
     }
   ] as const;
   const pages = 3;
@@ -56,7 +63,7 @@ export default function BrandOnePager() {
   const router = useRouter();
   const { user, isSignedIn } = useUser();
   const { session, openSignIn } = useClerk();
-
+  const [fetchingBrandInfo, setFetchingBrandInfo] = useState(false);
   const credits = user?.publicMetadata?.credits;
   const newUser = typeof credits === "undefined";
 
@@ -83,9 +90,35 @@ export default function BrandOnePager() {
     }));
   };
 
+  async function fetchDetails() {
+    setFetchingBrandInfo(true);
+
+    try {
+      const { error, details } = await fetchBrandDetails();
+
+      if (error) {
+        toast.error(error);
+        console.error(JSON.stringify(error, null, 2));
+      }
+
+      console.log("brand details", details?.details);
+
+      setFormData((prevState) => ({
+        ...prevState,
+        brandName: details?.details.brandName || prevState.brandName,
+        brandInfo: details?.details.brandInfo || prevState.brandInfo,
+        brandColors: details?.details.brandColors || prevState.brandColors,
+        website_url: details?.details.website_url || prevState.website_url
+      }));
+    } catch (error) {
+      console.error(JSON.stringify(error, null, 2));
+    } finally {
+      setFetchingBrandInfo(false);
+    }
+  }
+
   const handleSubmit = async () => {
     const validationResult = brandDeckSchema.safeParse(formData);
-    
 
     if (!validationResult.success) {
       // Extract validation errors
@@ -112,6 +145,7 @@ export default function BrandOnePager() {
       pages,
       brandInfo: formData.brandInfo,
       brandColors: formData.brandColors,
+      website_url:formData.website_url,
       type: "Brand Deck"
     });
 
@@ -133,7 +167,10 @@ export default function BrandOnePager() {
           const res = await fetch("/api/image-generation", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ prompt: jsonResponse[pageKey],aspect_ratio:"16:9" })
+            body: JSON.stringify({
+              prompt: jsonResponse[pageKey],
+              aspect_ratio: "16:9"
+            })
           });
 
           const data = await res.json();
@@ -158,7 +195,9 @@ export default function BrandOnePager() {
       router.push(
         `/download-generated-image?firstImage=${encodeURIComponent(
           imageUrls[0]
-        )}&allImages=${encodeURIComponent(JSON.stringify(imageUrls))}&pdfName=${encodeURIComponent("brand-deck")}`
+        )}&allImages=${encodeURIComponent(
+          JSON.stringify(imageUrls)
+        )}&pdfName=${encodeURIComponent("brand-deck")}`
       );
 
       const res = await fetch("/api/save-images", {
@@ -179,7 +218,7 @@ export default function BrandOnePager() {
     <GenerationLoader />
   ) : (
     <ContentLayout title2="Brand Deck">
-      <div className="flex flex-col items-center justify-center px-6 py-12 gap-6">
+      <div className="flex flex-col items-center justify-center px-6 py-12 gap-6 ">
         {/* Title Section */}
         <div className="flex gap-6 items-center justify-center">
           <Image
@@ -192,7 +231,7 @@ export default function BrandOnePager() {
             Professional brand deck
           </h1>
 
-          <div>
+          <div className="flex gap-5">
             {isSignedIn && newUser && (
               <Button
                 size={"sm"}
@@ -211,42 +250,80 @@ export default function BrandOnePager() {
                 <span className="font-medium">{credits}</span>
               </div>
             )}
+            <Button
+              className="px-4 py-3 rounded-full relative overflow-hidden shadow-lg "
+              onClick={fetchDetails}
+              disabled={fetchingBrandInfo}
+            >
+              <Image
+                src={"/buttonbg.svg"}
+                alt="buttonbg"
+                fill
+                className="object-cover absolute top-0 left-0 w-full h-full z-0 "
+              />
+              {fetchingBrandInfo ? (
+                <>
+                  <Loader2 className="animate-spin mr-2" />{" "}
+                </>
+              ) : (
+                <p className=" relative z-10 text-white">Use my brand</p>
+              )}
+            </Button>
           </div>
         </div>
+
         <p className="text-gray-600 mt-2 italic">
-          Answer a few key questions, and we&apos;ll craft a professional brand deck
-          tailored to your business.
+          Answer a few key questions, and we&apos;ll craft a professional brand
+          deck tailored to your business.
         </p>
 
         {/* Input Section */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl">
-          {inputFields.map((field, index) => (
-            <div key={index} className="relative flex flex-col gap-2">
-              <label className="block text-sm font-medium text-gray-700 italic">
-                {field.label}
-              </label>
-              <div className="relative rounded-md overflow-hidden p-[2px] bg-gradient-to-r from-purple-600 to-pink-600 shadow-lg">
-                <input
-                  type="text"
-                  placeholder={field.placeholder}
-                  className="block w-full rounded-md bg-white focus-visible:outline-none focus-visible:ring-0 px-2 py-2 text-sm"
-                  value={formData[field.name]}
-                  onChange={(e) =>
-                    handleInputChange(field.name, e.target.value)
-                  }
-                />
+          {inputFields
+            .filter((field) => field.name !== "website_url")
+            .map((field, index) => (
+              <div key={index} className="relative flex flex-col gap-2">
+                <label className="block text-sm font-medium text-gray-700 italic">
+                  {field.label}
+                </label>
+                <div className="relative rounded-md overflow-hidden p-[2px] bg-gradient-to-r from-purple-600 to-pink-600 shadow-lg">
+                  <input
+                    type="text"
+                    placeholder={field.placeholder}
+                    className="block w-full rounded-md bg-white focus-visible:outline-none focus-visible:ring-0 px-2 py-2 text-sm"
+                    value={formData[field.name]}
+                    onChange={(e) =>
+                      handleInputChange(field.name, e.target.value)
+                    }
+                  />
+                </div>
+                {errors[field.name] && (
+                  <span className="text-red-500 text-sm">
+                    {errors[field.name]}
+                  </span>
+                )}
               </div>
-              {errors[field.name] && (
-                <span className="text-red-500 text-sm">
-                  {errors[field.name]}
-                </span>
-              )}
-            </div>
-          ))}
+            ))}
         </div>
 
         {/* Button Section */}
-        <div className="mt-20">
+        <div className="mt-20 flex flex-col  items-center gap-4 justify-center">
+          <div className="relative flex flex-col gap-2 w-full max-w-md">
+            <label className="block text-sm font-medium text-gray-700 italic text-center">
+              Provide Reference Website
+            </label>
+            <div className="relative rounded-md overflow-hidden p-[2px] bg-gradient-to-r from-blue-500 to-cyan-500 shadow-lg">
+              <input
+                type="text"
+                placeholder="Paste your website URL here"
+                className="block w-full rounded-md bg-white focus-visible:outline-none focus-visible:ring-0 px-2 py-2 text-sm"
+                value={formData.website_url || ""}
+                onChange={(e) =>
+                  handleInputChange("website_url", e.target.value)
+                }
+              />
+            </div>
+          </div>
           <Button
             className="px-6 py-6 rounded-xl relative overflow-hidden shadow-lg"
             onClick={handleSubmit}

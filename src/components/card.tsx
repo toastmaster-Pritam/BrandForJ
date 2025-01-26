@@ -40,7 +40,7 @@ const DynamicChartCard = () => {
   };
 
   return (
-    <div className="w-1/3 bg-black text-white rounded-xl p-4 flex flex-col justify-between z-50 animate-slide-up">
+    <div className="w-1/3 bg-black text-white rounded-xl p-4 flex flex-col justify-between z-40 animate-slide-up">
       <div className="flex flex-row items-center justify-between pb-2 gap-4">
         <h2 className="text-lg font-bold">Activity</h2>
         <span className="rounded-full bg-zinc-800 px-4 py-1 text-sm">
@@ -64,7 +64,7 @@ const DynamicChartCard = () => {
           />
           <div className="absolute text-center text-lg font-bold mt-10">
             {toPercentage({
-              value: totalCredits - Number(credits) || 0,
+              value: newUser?0 :(totalCredits- Number(credits)) || 10,
               total: totalCredits
             })}
             %
@@ -95,7 +95,7 @@ const DynamicChartCard = () => {
             </div>
             <span className="text-sm font-bold ml-6">
               {toPercentage({
-                value: Number(credits) || 0,
+                value: newUser?10: Number(credits) || 0,
                 total: totalCredits
               })}
               %

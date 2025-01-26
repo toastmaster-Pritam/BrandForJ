@@ -13,15 +13,19 @@ export default function AdminPanelLayout({
   children: React.ReactNode;
 }) {
   const sidebar = useStore(useSidebar, (x) => x);
-  
 
   const getOpenState = sidebar?.getOpenState || (() => false);
   const settings = sidebar?.settings || { disabled: false };
   const pathname = usePathname();
 
   // Conditional rendering for paths starting with '/auth'
-  if (pathname.startsWith('/sign-up') || pathname.startsWith('/sign-in')) {
-    return <main>{children}</main>
+  if (
+    pathname.startsWith("/sign-up") ||
+    pathname.startsWith("/sign-in") ||
+    pathname.startsWith("/privacy-policy") ||
+    pathname.startsWith("/terms-conditions")
+  ) {
+    return <main>{children}</main>;
   }
 
   // Default layout for other paths
@@ -37,5 +41,5 @@ export default function AdminPanelLayout({
         {children}
       </main>
     </>
-  )
+  );
 }

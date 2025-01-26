@@ -4,3 +4,5 @@ export type User = {
     email?: string;
     avatarUrl?:string;
   };
+
+  export type Role ='admin' | undefined

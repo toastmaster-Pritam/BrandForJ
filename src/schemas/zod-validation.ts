@@ -8,7 +8,8 @@ export const brandBookSchema = z.object({
     message: "Enter valid number of pages"
   }),
   brandColors: z.string().min(1, "Brand Colors are required"),
-  imageryStyle: z.string().min(1, "Imagery & Visual Style is required")
+  imageryStyle: z.string().min(1, "Imagery & Visual Style is required"),
+  website_url:z.string().optional()
 });
 
 export const brandDeckSchema = brandBookSchema.omit({
@@ -23,6 +24,8 @@ export const onePagerSchema =z.object({
   bussinessMode: z.string().min(1, "Mention your mode of bussiness"),
   targetAudience:z.string().min(1, "Mention your target audience"),
   brandColors: z.string().min(1, "Brand Colors are required"),
-  achievements: z.string().optional()
+  achievements: z.string().optional(),
+  website_url:z.string().optional()
+
 
 })

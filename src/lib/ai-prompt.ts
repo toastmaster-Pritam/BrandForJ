@@ -7,6 +7,7 @@ interface BrandGuidelineArgs {
   brandColors: string;
   imageryStyle?: string;
   type: string;
+  website_url?: string;
 }
 
 interface BrandInfographicsArgs {
@@ -19,6 +20,7 @@ interface BrandInfographicsArgs {
   bussinessMode: string;
   achievements: string;
   type: string;
+  website_url?: string;
 }
 
 interface BrandLogoArgs {
@@ -35,7 +37,8 @@ export function generateBrandGuideline({
   brandColors,
   brandTone,
   imageryStyle,
-  type
+  type,
+  website_url
 }: BrandGuidelineArgs): string {
   const prompt = `
       Generate a JSON structure for a ${
@@ -47,7 +50,10 @@ export function generateBrandGuideline({
     brandInfo ? brandInfo : ""
   }, ${brandTone ? brandTone : ""}, ${brandColors}, ${
     imageryStyle ? imageryStyle : ""
-  }). Include elements like graphs, charts, and clear alignments where applicable.
+  }).${
+    website_url &&
+    `Also it should be like the provided reference website:${website_url}.`
+  } Include elements like graphs, charts, and clear alignments where applicable.
 
       Ensure the structure follows like this example format:
       {
@@ -86,7 +92,8 @@ export function generateInfographics({
   targetAudience,
   bussinessMode,
   achievements,
-  type
+  type,
+  website_url
 }: BrandInfographicsArgs): string {
   const prompt = `
       Generate a JSON structure for a ${
@@ -94,7 +101,10 @@ export function generateInfographics({
       }-page Brand ${type} for ${brandName}.Do not exceed number of pages mentioned! 
       Each key should represent a page (e.g., "page1", "page2", etc.), and the value should contain a detailed description of what to include on that page.
       
-      Descriptions should be specific, visually detailed, and aligned with ${brandName}'s unique brand identity (${brandInfo}, ${targetAudience}, ${brandColors}, ${bussinessMode},${achievements}). Include elements like graphs, charts, and clear alignments where applicable.
+      Descriptions should be specific, visually detailed, and aligned with ${brandName}'s unique brand identity (${brandInfo}, ${targetAudience}, ${brandColors}, ${bussinessMode},${achievements}).${
+    website_url &&
+    `Also it should be like the provided reference website:${website_url}.`
+  } Include elements like graphs, charts, and clear alignments where applicable.
 
       Ensure the structure follows like this example format:
       {
@@ -130,10 +140,15 @@ export function generateOnePagerPrompt({
   brandColors,
   targetAudience,
   bussinessMode,
-  achievements
+  achievements,
+  website_url
 }: Omit<BrandInfographicsArgs, "year" | "pages" | "type">): string {
   const prompt = `Provide me an High detailed and high content single lined prompt to generate image of One-Pager For the following content :
-  brandName:${brandName},brandInfo:${brandInfo},brandColors:${brandColors},targetAudience:${targetAudience},bussiness mode:${bussinessMode},key achievements:${achievements}
+  brandName:${brandName},brandInfo:${brandInfo},brandColors:${brandColors},targetAudience:${targetAudience},bussiness mode:${bussinessMode},key achievements:${achievements}.
+  ${
+    website_url &&
+    `Also it should be like the provided reference website:${website_url}`
+  }
   `;
 
   return prompt;

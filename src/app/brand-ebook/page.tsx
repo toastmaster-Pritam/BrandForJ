@@ -10,9 +10,10 @@ import pLimit from "p-limit";
 import { useClerk, useUser } from "@clerk/nextjs";
 import { AddFreeCredits } from "../actions/addFreeCredits";
 import { toast } from "react-toastify";
-import { Zap } from "lucide-react";
+import { Loader2, Zap } from "lucide-react";
 import { brandBookSchema } from "@/schemas/zod-validation";
 import GenerationLoader from "@/components/generation-loader";
+import { fetchBrandDetails } from "../actions/fetchBrandDetails";
 const limit = pLimit(1);
 
 interface FormData {
@@ -22,6 +23,7 @@ interface FormData {
   pages: string;
   brandColors: string;
   imageryStyle: string;
+  website_url?: string;
 }
 
 export default function BrandEBookPage() {
@@ -52,6 +54,11 @@ export default function BrandEBookPage() {
       name: "imageryStyle",
       label: "Imagery & Visual Style",
       placeholder: "Type Your Brand Information"
+    },
+    {
+      name: "website_url",
+      label: "Reference Website",
+      placeholder: "Reference website"
     }
   ] as const;
 
@@ -70,6 +77,36 @@ export default function BrandEBookPage() {
   const router = useRouter();
   const credits = user?.publicMetadata?.credits;
   const newUser = typeof credits === "undefined";
+  const [fetchingBrandInfo, setFetchingBrandInfo] = useState(false);
+
+  async function fetchDetails() {
+    setFetchingBrandInfo(true);
+
+    try {
+      const { error, details } = await fetchBrandDetails();
+
+      if (error) {
+        toast.error(error);
+        console.error(JSON.stringify(error, null, 2));
+      }
+
+      console.log("brand details", details?.details);
+
+      setFormData((prevState) => ({
+        ...prevState,
+        brandName: details?.details.brandName || prevState.brandName,
+        brandInfo: details?.details.brandInfo || prevState.brandInfo,
+        brandTone: details?.details.brandTone || prevState.brandTone,
+        brandColors: details?.details.brandColors || prevState.brandColors,
+        imageryStyle: details?.details.imageryStyle || prevState.imageryStyle,
+        website_url: details?.details.website_url || prevState.website_url
+      }));
+    } catch (error) {
+      console.error(JSON.stringify(error, null, 2));
+    } finally {
+      setFetchingBrandInfo(false);
+    }
+  }
 
   const handleInputChange = (name: keyof FormData, value: string) => {
     setFormData((prevState) => ({
@@ -125,6 +162,7 @@ export default function BrandEBookPage() {
       brandTone: formData.brandTone,
       brandColors: formData.brandColors,
       imageryStyle: formData.imageryStyle,
+      website_url:formData.website_url,
       type: "Brand Book"
     });
 
@@ -146,7 +184,10 @@ export default function BrandEBookPage() {
           const res = await fetch("/api/image-generation", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ prompt: jsonResponse[pageKey],aspect_ratio:"9:16" })
+            body: JSON.stringify({
+              prompt: jsonResponse[pageKey],
+              aspect_ratio: "9:16"
+            })
           });
 
           const data = await res.json();
@@ -169,7 +210,9 @@ export default function BrandEBookPage() {
       router.push(
         `/download-generated-image?firstImage=${encodeURIComponent(
           imageUrls[0]
-        )}&allImages=${encodeURIComponent(JSON.stringify(imageUrls))}&pdfName=${encodeURIComponent("brand-ebook")}`
+        )}&allImages=${encodeURIComponent(
+          JSON.stringify(imageUrls)
+        )}&pdfName=${encodeURIComponent("brand-ebook")}`
       );
 
       const res = await fetch("/api/save-images", {
@@ -200,7 +243,7 @@ export default function BrandEBookPage() {
           />
           <h1 className="text-3xl font-bold text-black">AI-Generated E-Book</h1>
 
-          <div>
+          <div className="flex gap-6">
             {isSignedIn && newUser && (
               <Button
                 size={"sm"}
@@ -219,6 +262,25 @@ export default function BrandEBookPage() {
                 <span className="font-medium">{credits}</span>
               </div>
             )}
+            <Button
+              className="px-4 py-3 rounded-full relative overflow-hidden shadow-lg "
+              onClick={fetchDetails}
+              disabled={fetchingBrandInfo}
+            >
+              <Image
+                src={"/buttonbg.svg"}
+                alt="buttonbg"
+                fill
+                className="object-cover absolute top-0 left-0 w-full h-full z-0 "
+              />
+              {fetchingBrandInfo ? (
+                <>
+                  <Loader2 className="animate-spin mr-2" />{" "}
+                </>
+              ) : (
+                <p className=" relative z-10 text-white">Use my brand</p>
+              )}
+            </Button>
           </div>
         </div>
         <p className="text-gray-600 mt-2 italic">
@@ -226,31 +288,49 @@ export default function BrandEBookPage() {
           for you
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl">
-          {inputFields.map((field, index) => (
-            <div key={index} className="relative flex flex-col gap-2">
-              <label className="block text-sm font-medium text-gray-700 italic">
-                {field.label}
-              </label>
-              <div className="relative rounded-md overflow-hidden p-[2px] bg-gradient-to-r from-purple-600 to-pink-600 shadow-lg">
-                <input
-                  type="text"
-                  placeholder={field.placeholder}
-                  className="block w-full rounded-md bg-white focus-visible:outline-none focus-visible:ring-0 px-2 py-2 text-sm"
-                  value={formData[field.name]}
-                  onChange={(e) =>
-                    handleInputChange(field.name, e.target.value)
-                  }
-                />
+          {inputFields
+            .filter((field) => field.name !== "website_url")
+            .map((field, index) => (
+              <div key={index} className="relative flex flex-col gap-2">
+                <label className="block text-sm font-medium text-gray-700 italic">
+                  {field.label}
+                </label>
+                <div className="relative rounded-md overflow-hidden p-[2px] bg-gradient-to-r from-purple-600 to-pink-600 shadow-lg">
+                  <input
+                    type="text"
+                    placeholder={field.placeholder}
+                    className="block w-full rounded-md bg-white focus-visible:outline-none focus-visible:ring-0 px-2 py-2 text-sm"
+                    value={formData[field.name]}
+                    onChange={(e) =>
+                      handleInputChange(field.name, e.target.value)
+                    }
+                  />
+                </div>
+                {errors[field.name] && (
+                  <span className="text-red-500 text-sm">
+                    {errors[field.name]}
+                  </span>
+                )}
               </div>
-              {errors[field.name] && (
-                <span className="text-red-500 text-sm">
-                  {errors[field.name]}
-                </span>
-              )}
-            </div>
-          ))}
+            ))}
         </div>
-        <div className="mt-8">
+        <div className="mt-8 flex flex-col  items-center gap-4 justify-center">
+          <div className="relative flex flex-col gap-2 w-full max-w-md">
+            <label className="block text-sm font-medium text-gray-700 italic text-center">
+              Provide Reference Website
+            </label>
+            <div className="relative rounded-md overflow-hidden p-[2px] bg-gradient-to-r from-blue-500 to-cyan-500 shadow-lg">
+              <input
+                type="text"
+                placeholder="Paste your website URL here"
+                className="block w-full rounded-md bg-white focus-visible:outline-none focus-visible:ring-0 px-2 py-2 text-sm"
+                value={formData.website_url || ""}
+                onChange={(e) =>
+                  handleInputChange("website_url", e.target.value)
+                }
+              />
+            </div>
+          </div>
           <Button
             className="px-6 py-6 rounded-xl relative overflow-hidden shadow-lg"
             onClick={handleSubmit}

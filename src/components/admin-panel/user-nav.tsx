@@ -20,8 +20,20 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
+import { useClerk, useUser } from "@clerk/nextjs";
+import { toast } from "react-toastify";
 
 export function UserNav() {
+  const {user}=useUser()
+  const { signOut } = useClerk();
+  // console.log("user",user)
+  
+   const handleSignOut = () => {
+      signOut({ redirectUrl: "/sign-in" });
+      toast.success("Signed Out Successfully!");
+    };
+
+  
   return (
     <DropdownMenu>
       <TooltipProvider disableHoverableContent>
@@ -33,7 +45,7 @@ export function UserNav() {
                 className="relative h-8 w-8 rounded-full"
               >
                 <Avatar className="h-8 w-8">
-                  <AvatarImage src="#" alt="Avatar" />
+                  <AvatarImage src={user?.imageUrl} alt="Avatar" />
                   <AvatarFallback className="bg-transparent">JD</AvatarFallback>
                 </Avatar>
               </Button>
@@ -46,9 +58,9 @@ export function UserNav() {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">John Doe</p>
+            <p className="text-sm font-medium leading-none">{user?.firstName ||"Anonymous"}{" "}{user?.lastName|| ""}</p>
             <p className="text-xs leading-none text-muted-foreground">
-              johndoe@example.com
+              {user?.emailAddresses?.[0]?.emailAddress || "placeholder@gmail.com"}
             </p>
           </div>
         </DropdownMenuLabel>
@@ -63,12 +75,12 @@ export function UserNav() {
           <DropdownMenuItem className="hover:cursor-pointer" asChild>
             <Link href="/account" className="flex items-center">
               <User className="w-4 h-4 mr-3 text-muted-foreground" />
-              Account
+              Manage Account
             </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="hover:cursor-pointer" onClick={() => {}}>
+        <DropdownMenuItem className="hover:cursor-pointer" onClick={handleSignOut}>
           <LogOut className="w-4 h-4 mr-3 text-muted-foreground" />
           Sign out
         </DropdownMenuItem>

@@ -1,12 +1,15 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { clerkMiddleware, createRouteMatcher, currentUser } from "@clerk/nextjs/server";
 import { NextResponse, userAgent } from "next/server";
 
 const isPublicRoute = createRouteMatcher([
   "/sign-in(.*)",
   "/sign-up(.*)",
   "/test(.*)",
-  "/api/webhooks(.*)"
+  "/api/webhooks(.*)",
+  "/privacy-policy",
+  "/terms-conditions"
 ]);
+
 
 export default clerkMiddleware(async (auth, request) => {
   // console.log("incoming request",request.url)
@@ -22,6 +25,7 @@ export default clerkMiddleware(async (auth, request) => {
 
     return NextResponse.rewrite(mobileRedirectUrl);
   }
+
   if (!isPublicRoute(request)) {
     await auth.protect();
   }

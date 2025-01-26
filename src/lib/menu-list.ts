@@ -13,7 +13,10 @@ import {
   TrendingUpIcon,
   CloudUploadIcon,
   BookText,
-  BrainCircuit
+  BrainCircuit,
+  UserRoundPlus,
+  FileCog,
+  Save
 } from "lucide-react";
 
 type Submenu = {
@@ -161,13 +164,14 @@ export function getMenuList(pathname: string): Group[] {
         }
       ]
     },
+    
     {
       groupLabel: "",
       menus: [
         {
-          href: "/account",
-          label: "Account",
-          icon: Settings
+          href: "/save-brand-info",
+          label: "Save Brand Details",
+          icon: Save
         }
       ]
     },
@@ -180,6 +184,20 @@ export function getMenuList(pathname: string): Group[] {
           icon: GemIcon
         }
       ]
-    }
+    },
+
+    {
+      groupLabel: "",
+      menus: [
+        {
+          href: "/admin/users",
+          label: "Admin User Controller",
+          icon: UserRoundPlus
+        },
+        
+        
+      ]
+    },
+    
   ];
 }

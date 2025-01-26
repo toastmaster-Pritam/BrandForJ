@@ -13,6 +13,7 @@ import { toast } from "react-toastify";
 import { Loader2, Zap } from "lucide-react";
 import { brandBookSchema } from "@/schemas/zod-validation";
 import GenerationLoader from "@/components/generation-loader";
+import { fetchBrandDetails } from "../actions/fetchBrandDetails";
 
 const limit = pLimit(1);
 
@@ -23,6 +24,7 @@ interface FormData {
   pages: string;
   brandColors: string;
   imageryStyle: string;
+  website_url?: string;
 }
 
 export default function BrandBookPage() {
@@ -53,6 +55,11 @@ export default function BrandBookPage() {
       name: "imageryStyle",
       label: "Imagery & Visual Style",
       placeholder: "Type Your Brand Information"
+    },
+    {
+      name: "website_url",
+      label: "Reference Website",
+      placeholder: "Reference website"
     }
   ] as const;
 
@@ -66,8 +73,9 @@ export default function BrandBookPage() {
     {}
   );
   const [loading, setLoading] = useState(false);
+  const [fetchingBrandInfo, setFetchingBrandInfo] = useState(false);
   const { user, isSignedIn } = useUser();
-  const { session, openSignIn } = useClerk();
+  const { session } = useClerk();
   const router = useRouter();
   const credits = user?.publicMetadata?.credits;
   const newUser = typeof credits === "undefined";
@@ -79,7 +87,7 @@ export default function BrandBookPage() {
     }));
     setErrors((prevState) => ({
       ...prevState,
-      [name]: undefined // Clear error when user types
+      [name]: undefined
     }));
   };
 
@@ -93,6 +101,35 @@ export default function BrandBookPage() {
 
     toast.success("10 credits added successfully!");
     session?.reload();
+  }
+
+  async function fetchDetails() {
+    setFetchingBrandInfo(true);
+
+    try {
+      const { error, details } = await fetchBrandDetails();
+
+      if (error) {
+        toast.error(error);
+        console.error(JSON.stringify(error, null, 2));
+      }
+
+      console.log("brand details", details?.details);
+
+      setFormData((prevState) => ({
+        ...prevState,
+        brandName: details?.details.brandName || prevState.brandName,
+        brandInfo: details?.details.brandInfo || prevState.brandInfo,
+        brandTone: details?.details.brandTone || prevState.brandTone,
+        brandColors: details?.details.brandColors || prevState.brandColors,
+        imageryStyle: details?.details.imageryStyle || prevState.imageryStyle,
+        website_url: details?.details.website_url || prevState.website_url
+      }));
+    } catch (error) {
+      console.error(JSON.stringify(error, null, 2));
+    } finally {
+      setFetchingBrandInfo(false);
+    }
   }
 
   const handleSubmit = async () => {
@@ -125,6 +162,7 @@ export default function BrandBookPage() {
       brandTone: formData.brandTone,
       brandColors: formData.brandColors,
       imageryStyle: formData.imageryStyle,
+      website_url:formData.website_url,
       type: "Brand Book"
     });
 
@@ -146,7 +184,10 @@ export default function BrandBookPage() {
           const res = await fetch("/api/image-generation", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ prompt: jsonResponse[pageKey],aspect_ratio:"16:9" })
+            body: JSON.stringify({
+              prompt: jsonResponse[pageKey],
+              aspect_ratio: "16:9"
+            })
           });
 
           const data = await res.json();
@@ -169,7 +210,9 @@ export default function BrandBookPage() {
       router.push(
         `/download-generated-image?firstImage=${encodeURIComponent(
           imageUrls[0]
-        )}&allImages=${encodeURIComponent(JSON.stringify(imageUrls))}&pdfName=${encodeURIComponent("brand-book")}`
+        )}&allImages=${encodeURIComponent(
+          JSON.stringify(imageUrls)
+        )}&pdfName=${encodeURIComponent("brand-book")}`
       );
 
       const res = await fetch("/api/save-images", {
@@ -202,7 +245,7 @@ export default function BrandBookPage() {
             Define your brand identity
           </h1>
 
-          <div>
+          <div className="flex gap-5">
             {isSignedIn && newUser && (
               <Button
                 size={"sm"}
@@ -221,14 +264,35 @@ export default function BrandBookPage() {
                 <span className="font-medium">{credits}</span>
               </div>
             )}
+
+            <Button
+              className="px-4 py-3 rounded-full relative overflow-hidden shadow-lg "
+              onClick={fetchDetails}
+              disabled={fetchingBrandInfo}
+            >
+              <Image
+                src={"/buttonbg.svg"}
+                alt="buttonbg"
+                fill
+                className="object-cover absolute top-0 left-0 w-full h-full z-0 "
+              />
+              {fetchingBrandInfo ? (
+                <>
+                  <Loader2 className="animate-spin mr-2" />{" "}
+                  
+                </>
+              ) : (
+                <p className=" relative z-10 text-white">Use my brand</p>
+              )}
+            </Button>
           </div>
         </div>
         <p className="text-gray-600 mt-2 italic">
-          Answer a few key questions, and we&apos;ll craft a professional brandbook
-          tailored to your business.
+          Answer a few key questions, and we&apos;ll craft a professional
+          brandbook tailored to your business.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl">
-          {inputFields.map((field, index) => (
+          {inputFields.filter((field) => field.name !== "website_url").map((field, index) => (
             <div key={index} className="relative flex flex-col gap-2">
               <label className="block text-sm font-medium text-gray-700 italic">
                 {field.label}
@@ -252,7 +316,23 @@ export default function BrandBookPage() {
             </div>
           ))}
         </div>
-        <div className="mt-8">
+        <div className="mt-8 flex flex-col  items-center gap-4 justify-center">
+        <div className="relative flex flex-col gap-2 w-full max-w-md">
+            <label className="block text-sm font-medium text-gray-700 italic text-center">
+              Provide Reference Website
+            </label>
+            <div className="relative rounded-md overflow-hidden p-[2px] bg-gradient-to-r from-blue-500 to-cyan-500 shadow-lg">
+              <input
+                type="text"
+                placeholder="Paste your website URL here"
+                className="block w-full rounded-md bg-white focus-visible:outline-none focus-visible:ring-0 px-2 py-2 text-sm"
+                value={formData.website_url || ""}
+                onChange={(e) =>
+                  handleInputChange("website_url", e.target.value)
+                }
+              />
+            </div>
+          </div>
           <Button
             className="px-6 py-6 rounded-xl relative overflow-hidden shadow-lg"
             onClick={handleSubmit}
@@ -265,19 +345,18 @@ export default function BrandBookPage() {
               className="object-cover absolute top-0 left-0 w-full h-full z-0 rounded-xl"
             />
             {loading ? (
-                <>
-                  <Loader2 className="animate-spin mr-2" /> Please wait...
-                </>
-              ) : (
-                <p className="text-xl relative z-10 text-white">
-              Generate Brand Book
-            </p>
-              )}
-            
+              <>
+                <Loader2 className="animate-spin mr-2" /> Please wait...
+              </>
+            ) : (
+              <p className="text-xl relative z-10 text-white">
+                Generate Brand Book
+              </p>
+            )}
           </Button>
         </div>
-         {/* Footer Section */}
-         <div className="mt-12 text-gray-400 flex justify-center items-center gap-3">
+        {/* Footer Section */}
+        <div className="mt-12 text-gray-400 flex justify-center items-center gap-3">
           <p className="text-2xl font-bold">Powered by Forj AI 2.0</p>
           <Image
             src="/pic2.svg" // Placeholder for the AI icon
