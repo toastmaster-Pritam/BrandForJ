@@ -12,6 +12,8 @@ const DashboardClient = ({ username }: { username: string }) => {
   const { user } = useUser();
   if (!sidebar) return null;
 
+  if(!user) return null;
+
   const createdAt = new Date(user?.createdAt || Date.now()); // Fallback to now if `createdAt` is unavailable
   const now = new Date();
   const timeDifference = now.getTime() - createdAt.getTime();

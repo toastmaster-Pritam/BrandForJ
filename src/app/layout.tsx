@@ -5,7 +5,7 @@ import "./globals.css";
 
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import AdminPanelLayout from "@/components/admin-panel/admin-panel-layout";
-import { ClerkProvider } from "@clerk/nextjs";
+import { ClerkProvider} from "@clerk/nextjs";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -37,6 +37,7 @@ export default function RootLayout({
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
             <AdminPanelLayout>
               <ToastContainer />
+              
               {children}
             </AdminPanelLayout>
             

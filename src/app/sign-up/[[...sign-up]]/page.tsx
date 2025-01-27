@@ -8,7 +8,7 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { Loader2, LockKeyholeIcon, Mail } from "lucide-react";
 import Link from "next/link";
-import { useSignIn, useSignUp } from "@clerk/nextjs";
+import { useSignIn, useSignUp, useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import OTPVerificationPage from "@/components/admin-panel/otp-verification";
 import { toast } from "react-toastify";
@@ -28,9 +28,7 @@ const Page = () => {
   const [googleLoading, setGoogleLoading] = useState(false);
   const router = useRouter();
 
-  if (!isLoaded) {
-    return <p>Loading...</p>;
-  }
+
 
   const handleChange = (e: any) => {
     const { id, value, type, checked } = e.target;
@@ -41,13 +39,25 @@ const Page = () => {
   };
 
   const signUpWith = async(strategy: OAuthStrategy) => {
-    if(!signUp) return null;
+    if(!isLoaded) return null;
+
+
+
     setGoogleLoading(true)
-    return signUp.authenticateWithRedirect({
-      strategy,
-      redirectUrl: '/sign-up/sso-callback',
-      redirectUrlComplete: '/dashboard',
-    })
+    try {
+      await signUp.authenticateWithRedirect({
+        strategy,
+        redirectUrl: '/sign-in',
+        redirectUrlComplete: '/dashboard',
+      })
+      
+    } catch (error) {
+
+      toast.error("Something went wrong!,please try again!");
+      router.push("/sign-in")
+      
+    }
+    
   }
 
 

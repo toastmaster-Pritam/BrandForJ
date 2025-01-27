@@ -8,6 +8,8 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import { Loader2 } from "lucide-react";
+import { useSignUp } from "@clerk/nextjs";
+import { toast } from "react-toastify";
 
 interface OTPVerificationPageProps {
   code: string; // The OTP code entered by the user
@@ -24,6 +26,8 @@ const OTPVerificationPage = ({
 }: OTPVerificationPageProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false); // Loading state
 
+  const {isLoaded,signUp}=useSignUp()
+
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true); // Set loading state
@@ -33,6 +37,22 @@ const OTPVerificationPage = ({
       setIsSubmitting(false); // Reset loading state
     }
   };
+
+  const handleResendCode=async ()=>{
+    if(!isLoaded) return;
+
+    try {
+      await signUp.prepareEmailAddressVerification({strategy:"email_code"})
+
+      toast.success("OTP has been sent to your email!");
+      
+    } catch (error) {
+
+      console.error(JSON.stringify(error,null,2))
+      toast.error("Something went wrong, please try again!")
+      
+    }
+  }
 
   return (
     <form
@@ -90,6 +110,7 @@ const OTPVerificationPage = ({
               Didn&apos;t receive an email?{" "}
               <a
                 href="#"
+                onClick={handleResendCode}
                 className="text-[#011F4B] hover:underline font-semibold"
               >
                 Resend OTP

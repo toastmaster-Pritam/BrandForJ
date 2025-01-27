@@ -11,7 +11,7 @@ import Link from "next/link";
 import { useSignIn, useSignUp } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
-import { OAuthStrategy } from '@clerk/types'
+import { OAuthStrategy } from "@clerk/types";
 
 const Page = () => {
   const [formData, setFormData] = useState({
@@ -24,6 +24,7 @@ const Page = () => {
 
   const { signIn, isLoaded, setActive } = useSignIn();
   const router = useRouter();
+  
 
   if (!isLoaded) {
     return <p>Loading...</p>;
@@ -38,24 +39,26 @@ const Page = () => {
   };
 
   const signInWith = async (strategy: OAuthStrategy) => {
-    if (!signIn) return;
 
-    setGoogleLoading(true); // Start Google loading animation
+    if (!isLoaded) return;
+
+
+    setGoogleLoading(true);
     try {
       await signIn.authenticateWithRedirect({
         strategy,
-        redirectUrl: "/sign-up/sso-callback",
-        redirectUrlComplete: "/dashboard",
+        redirectUrl: "/sign-up",
+        redirectUrlComplete: "/dashboard"
       });
     } catch (error: any) {
-      console.error("Google Sign-In Error:", error.errors || error.message);
-      toast.error("Google Sign-In failed. Please try again.");
+     
+        console.error("Google Sign-In Error:", error.errors || error.message);
+        toast.error("Google Sign-In failed. Please try again.");
+      
     } finally {
       setGoogleLoading(false); // Stop Google loading animation
     }
   };
-
-  
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
@@ -222,9 +225,6 @@ const Page = () => {
                 </>
               )}
             </Button>
-
-
-            
           </form>
 
           {/* Sign Up */}
