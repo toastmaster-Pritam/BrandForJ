@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { generatePdf } from "@/lib/generate-pdf"; // Import your utility function
 import { toast } from "react-toastify";
-import { Divide } from "lucide-react";
 
 interface RecentActivityProps {
   imageUrls: { fileUrl: string[]; createdAt: string }[];

@@ -169,6 +169,7 @@ export default function BrandBookPage() {
 
       const rawData = await response.json();
       const rawContent = rawData?.aiResponse?.choices[0]?.message?.content;
+      console.log("AI Response:", rawContent);
 
       const res = await fetch("/api/image-generation", {
         method: "POST",
