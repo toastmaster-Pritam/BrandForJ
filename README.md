@@ -36,7 +36,6 @@ BrandForJ is a sophisticated web application that helps businesses and individua
 - **Modern UI/UX**:
   - Responsive design
   - Dark/Light mode support
-  - Mobile-friendly interface
 
 ## Tech Stack
 
@@ -53,7 +52,8 @@ BrandForJ is a sophisticated web application that helps businesses and individua
   - Next.js API routes
   - Prisma ORM
   - PostgreSQL database
-  - OpenAI integration
+  - Gemini integration
+  - Blackforest-lab/FLUX.1-dev model Implementation.
   - Cloudinary for image management
 
 - **Authentication**:
